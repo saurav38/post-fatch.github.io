@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Posts</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f2f2f2;
+			padding: 20px;
+		}
+
+		h2 {
+			color: #ff4500;
+			margin-bottom: 5px;
+		}
+
+		.post {
+			background-color: #fff;
+			padding: 10px;
+			margin-bottom: 10px;
+			border-radius: 5px;
+			box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+		}
+
+		.title {
+			font-size: 20px;
+			font-weight: bold;
+			color: #007bff;
+			margin-bottom: 5px;
+		}
+
+		.url {
+			color: #333;
+			margin-bottom: 5px;
+		}
+
+		.score {
+			color: #28a745;
+			font-size: 16px;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		.selftext {
+			margin-bottom: 5px;
+		}
+
+		.search {
+			margin-bottom: 10px;
+		}
+
+		@media screen and (min-width: 768px) {
+			.post {
+				display: flex;
+			}
+
+			.thumbnail {
+				flex-basis: 20%;
+				margin-right: 10px;
+			}
+
+			.details {
+				flex-basis: 80%;
+			}
+		}
+	</style>
+</head>
+<body>
+	<h1>Posts</h1>
+
+	<div class="search">
+		<label for="searchInput">Search posts:</label>
+		<input type="text" id="searchInput">
+	</div>
+
+	<div id="posts"></div>
+
+	<script>
+		fetch('https://www.reddit.com/r/reactjs.json')
+			.then(response => response.json())
+			.then(data => {
+				const posts = data.data.children;
+
+				let html = '';
+
+				posts.forEach(post => {
+					const { title, selftext_html, url, score } = post.data;
+
+					html += `
+						<div class="post">
+							<h2 class="title">${title}</h2>
+							<div class="details">
+								<p class="url">${url}</p>
+								<p class="score">Score: ${score}</p>
+								<p class="selftext">${selftext_html}</p>
+							</div>
+						</div>
+					`;
+				});
+
+				document.querySelector('#posts').innerHTML = html;
+
+				// Search functionality
+				const searchInput = document.querySelector('#searchInput');
+
+				searchInput.addEventListener('input', () => {
+					const searchTerm = searchInput.value.trim().toLowerCase();
+
+					if (searchTerm === '') {
+						// Show all posts if search box is empty
+						document.querySelectorAll('.post').forEach(post => post.style.display = 'block');
+					} else {
+						// Filter posts based on search term
+						document.querySelectorAll('.post').forEach(post => {
+							const title = post.querySelector('.title').textContent.toLowerCase();
+							const url = post.querySelector('.url').textContent.toLowerCase();
+							const selftext = post.querySelector('.selftext').textContent.toLowerCase();
+
+							if (title.includes(searchTerm) || url.includes(searchTerm) || selftext.includes(searchTerm)) {
+								post.style.display= 'block';
+} else {
+        post.style.display = 'none';
+       }
+});
+}
+});
+})
+.catch(error => console.error(error));
+</script>
+
+</body>
+</html>
